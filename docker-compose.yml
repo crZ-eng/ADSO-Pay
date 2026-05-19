@@ -1,0 +1,25 @@
+services:
+  ewalletbunker:
+    build: .
+    container_name: ewalletbunker_app
+
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    environment:
+      NODE_ENV: development
+
+    stdin_open: true
+    tty: true
+
+    command: npx expo start --host lan
+
+
+
