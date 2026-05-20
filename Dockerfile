@@ -1,18 +1,8 @@
 FROM node:20-alpine
-
-RUN apk add --no-cache bash git
-
 WORKDIR /app
-
+RUN npm install -g expo-cli
 COPY package*.json ./
-
-RUN npm install
-
+RUN npm install --legacy-peer-deps
 COPY . .
-
-EXPOSE 8081
-EXPOSE 19000
-EXPOSE 19001
-EXPOSE 19002
-
-CMD ["npm", "start"]
+EXPOSE 8081 19000 19001 19002
+CMD ["npx", "expo", "start", "-c"]
