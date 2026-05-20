@@ -1,36 +1,74 @@
 const {
-  generateTransactionHistory
+  generateTransactionHistory,
+  calculateNetBalance
 } = require('../walletEngine');
 
-describe('Pruebas walletEngine', () => {
+describe('Wallet Engine Tests', () => {
 
-  test('Debe generar la cantidad exacta de transacciones', () => {
+  test('Debe generar exactamente 50 transacciones', () => {
 
-    const total = 10;
+    const transactions = generateTransactionHistory(50);
 
-    const result = generateTransactionHistory(total);
-
-    expect(result).toHaveLength(total);
+    expect(transactions).toHaveLength(50);
 
   });
 
-  test('Cada transacción debe tener la estructura correcta', () => {
+  test('El amount siempre debe ser positivo y diferente de cero', () => {
 
-    const result = generateTransactionHistory(1);
+    const transactions = generateTransactionHistory(100);
 
-    const transaction = result[0];
+    transactions.forEach((transaction) => {
 
-    expect(transaction).toHaveProperty('id');
+      expect(transaction.amount).toBeGreaterThan(0);
 
-    expect(transaction).toHaveProperty('accountNumber');
+    });
 
-    expect(transaction).toHaveProperty('type');
+  });
 
-    expect(transaction).toHaveProperty('amount');
+  test('Ningún campo debe venir undefined', () => {
 
-    expect(transaction).toHaveProperty('date');
+    const transactions = generateTransactionHistory(20);
 
-    expect(transaction).toHaveProperty('status');
+    transactions.forEach((transaction) => {
+
+      Object.values(transaction).forEach((value) => {
+
+        expect(value).not.toBeUndefined();
+
+      });
+
+    });
+
+  });
+
+  test('Debe calcular correctamente el saldo neto', () => {
+
+    const transactions = [
+      {
+        type: 'Ingreso',
+        amount: 500000,
+        status: 'Completado'
+      },
+      {
+        type: 'Ingreso',
+        amount: 200000,
+        status: 'Completado'
+      },
+      {
+        type: 'Retiro',
+        amount: 100000,
+        status: 'Completado'
+      },
+      {
+        type: 'Retiro',
+        amount: 50000,
+        status: 'Pendiente'
+      }
+    ];
+
+    const result = calculateNetBalance(transactions);
+
+    expect(result).toBe(600000);
 
   });
 
