@@ -13,25 +13,26 @@ const {
   calculateNetBalance
 } = require('../walletEngine');
 
-const WalletScreen = () => {
+export default function WalletScreen() {
 
   const [filter, setFilter] = useState('Todos');
 
-  const transactions = useMemo(() => {
-    return generateTransactionHistory(200);
-  }, []);
+  const transactions = useMemo(
+    () => generateTransactionHistory(200),
+    []
+  );
 
   const filteredTransactions = useMemo(() => {
 
     if (filter === 'Ingreso') {
       return transactions.filter(
-        transaction => transaction.type === 'Ingreso'
+        item => item.type === 'Ingreso'
       );
     }
 
     if (filter === 'Retiro') {
       return transactions.filter(
-        transaction => transaction.type === 'Retiro'
+        item => item.type === 'Retiro'
       );
     }
 
@@ -39,42 +40,44 @@ const WalletScreen = () => {
 
   }, [filter, transactions]);
 
-  const netBalance = useMemo(() => {
-    return calculateNetBalance(transactions);
-  }, [transactions]);
-
-  const renderItem = ({ item }) => (
-
-    <View style={styles.card}>
-
-      <View>
-        <Text style={styles.type}>
-          {item.type}
-        </Text>
-
-        <Text style={styles.account}>
-          {item.accountNumber}
-        </Text>
-
-        <Text style={styles.status}>
-          {item.status}
-        </Text>
-      </View>
-
-      <Text
-        style={[
-          styles.amount,
-          item.type === 'Ingreso'
-            ? styles.income
-            : styles.withdraw
-        ]}
-      >
-        ${item.amount.toLocaleString('es-CO')}
-      </Text>
-
-    </View>
-
+  const netBalance = useMemo(
+    () => calculateNetBalance(transactions),
+    [transactions]
   );
+
+  const renderItem = ({ item }) => {
+
+    const amountStyle =
+      item.type === 'Ingreso'
+        ? styles.income
+        : styles.withdraw;
+
+    return (
+      <View style={styles.card}>
+
+        <View>
+
+          <Text style={styles.type}>
+            {item.type}
+          </Text>
+
+          <Text style={styles.account}>
+            {item.accountNumber}
+          </Text>
+
+          <Text style={styles.status}>
+            {item.status}
+          </Text>
+
+        </View>
+
+        <Text style={[styles.amount, amountStyle]}>
+          ${item.amount.toLocaleString('es-CO')}
+        </Text>
+
+      </View>
+    );
+  };
 
   return (
 
@@ -131,49 +134,45 @@ const WalletScreen = () => {
         data={filteredTransactions}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        initialNumToRender={15}
-        maxToRenderPerBatch={10}
-        windowSize={5}
-        removeClippedSubviews
+        showsVerticalScrollIndicator={false}
       />
 
     </View>
 
   );
-
-};
+}
 
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
-    padding: 20,
+    backgroundColor: '#121212',
+    padding: 16,
     paddingTop: 60
   },
 
   title: {
-    color: 'white',
-    fontSize: 28,
+    color: '#fff',
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 20
   },
 
   balanceContainer: {
-    backgroundColor: '#1e293b',
+    backgroundColor: '#1f1f1f',
+    borderRadius: 16,
     padding: 20,
-    borderRadius: 15,
     marginBottom: 20
   },
 
   balanceLabel: {
-    color: '#94a3b8',
+    color: '#aaa',
     fontSize: 16
   },
 
   balance: {
-    color: '#22c55e',
-    fontSize: 30,
+    color: '#fff',
+    fontSize: 32,
     fontWeight: 'bold',
     marginTop: 10
   },
@@ -185,22 +184,21 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: '#2563eb',
-    padding: 12,
-    borderRadius: 10,
-    width: '30%'
+    backgroundColor: '#333',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10
   },
 
   buttonText: {
-    color: 'white',
-    textAlign: 'center',
+    color: '#fff',
     fontWeight: 'bold'
   },
 
   card: {
-    backgroundColor: '#1e293b',
-    padding: 15,
-    borderRadius: 12,
+    backgroundColor: '#1e1e1e',
+    borderRadius: 14,
+    padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -208,18 +206,18 @@ const styles = StyleSheet.create({
   },
 
   type: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold'
   },
 
   account: {
-    color: '#cbd5e1',
+    color: '#aaa',
     marginTop: 5
   },
 
   status: {
-    color: '#94a3b8',
+    color: '#888',
     marginTop: 5
   },
 
@@ -229,13 +227,11 @@ const styles = StyleSheet.create({
   },
 
   income: {
-    color: '#22c55e'
+    color: '#00C853'
   },
 
   withdraw: {
-    color: '#ef4444'
+    color: '#FF5252'
   }
 
 });
-
-export default WalletScreen;
