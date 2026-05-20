@@ -2,6 +2,8 @@ const { faker } = require('@faker-js/faker');
 
 const generateTransactionHistory = (count) => {
 
+  if (count <= 0) return [];
+
   const transactionTypes = ['Ingreso', 'Retiro'];
 
   const transactionStatus = [
@@ -21,7 +23,7 @@ const generateTransactionHistory = (count) => {
     amount: faker.number.float({
       min: 10000,
       max: 500000,
-      precision: 0.01
+      multipleOf: 0.01
     }),
 
     date: faker.date.recent({ days: 30 }),
@@ -32,6 +34,29 @@ const generateTransactionHistory = (count) => {
 
 };
 
+const calculateNetBalance = (transactions) => {
+
+  return transactions.reduce((total, transaction) => {
+
+    if (transaction.status !== 'Completado') {
+      return total;
+    }
+
+    if (transaction.type === 'Ingreso') {
+      return total + transaction.amount;
+    }
+
+    if (transaction.type === 'Retiro') {
+      return total - transaction.amount;
+    }
+
+    return total;
+
+  }, 0);
+
+};
+
 module.exports = {
-  generateTransactionHistory
+  generateTransactionHistory,
+  calculateNetBalance
 };
