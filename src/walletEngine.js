@@ -79,10 +79,62 @@ const buyUSDT = (copBalance, copAmount) => {
     remainingBalance: copBalance - copAmount
   };
 };
+const generateSavingGoals = (count) => {
+
+  return Array.from({ length: count }, () => ({
+
+    id: faker.string.uuid(),
+
+    name: faker.finance.accountName(),
+
+    savedAmount: faker.number.float({
+      min: 0,
+      max: 300000,
+      fractionDigits: 2
+    }),
+
+    targetAmount: faker.number.float({
+      min: 500000,
+      max: 5000000,
+      fractionDigits: 2
+    })
+
+  }));
+
+};
+
+const transferToGoal = (walletBalance, goal, amount) => {
+
+  if (amount <= 0) {
+    return {
+      status: 'Rechazado',
+      message: 'El monto debe ser mayor a cero'
+    };
+  }
+
+  if (amount > walletBalance) {
+    return {
+      status: 'Rechazado',
+      message: 'Saldo insuficiente'
+    };
+  }
+
+  goal.savedAmount += amount;
+
+  return {
+    status: 'Completado',
+    transferredAmount: amount,
+    remainingBalance: walletBalance - amount,
+    updatedGoal: goal
+  };
+
+};
 
 module.exports = {
   generateTransactionHistory,
   calculateNetBalance,
   generateExchangeRate,
-  buyUSDT
+  buyUSDT,
+  generateSavingGoals,
+  transferToGoal
 };
