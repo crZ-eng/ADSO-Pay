@@ -54,3 +54,27 @@ describe('Modulo de compra USDT', () => {
     });
 
 });
+
+describe('Modulo de Puntos de Fidelidad (Cashback)', () => {
+    
+    test('Debe otorgar el 1% en puntos para transacciones completadas mayores a $50,000 COP', () => {
+        const transaccionValida = { amount: 60000, status: 'Completado' };
+        const puntos = calcularPuntosCashback(transaccionValida);
+        expect(puntos).toBe(600);
+    });
+
+    test('Debe sumar exactamente 0 puntos si la transacción es menor o igual a $50,000 COP', () => {
+        const transaccionBaja = { amount: 45000, status: 'Completado' };
+        const puntos = calcularPuntosCashback(transaccionBaja);
+        expect(puntos).toBe(0);
+    });
+
+    test('Debe retornar 0 puntos si el estado es Rechazado o Pendiente', () => {
+        const transaccionRechazada = { amount: 100000, status: 'Rechazado' };
+        const transaccionPendiente = { amount: 100000, status: 'Pendiente' };
+        
+        expect(calcularPuntosCashback(transaccionRechazada)).toBe(0);
+        expect(calcularPuntosCashback(transaccionPendiente)).toBe(0);
+    });
+
+});
