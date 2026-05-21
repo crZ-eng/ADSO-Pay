@@ -10,25 +10,31 @@ const transactionStatus = [
 
 const generateTransactionHistory = (count) => {
 
-  return Array.from({ length: count }, () => ({
-
-    id: faker.string.uuid(),
-
-    accountNumber: faker.finance.accountNumber(),
-
-    type: faker.helpers.arrayElement(transactionTypes),
-
-    amount: faker.number.float({
+  return Array.from({ length: count }, () => {
+    const status = faker.helpers.arrayElement(transactionStatus);
+    const amount = faker.number.float({
       min: 10000,
       max: 500000,
       fractionDigits: 2
-    }),
+    });
 
-    date: faker.date.recent({ days: 30 }),
+    return {
+      id: faker.string.uuid(),
 
-    status: faker.helpers.arrayElement(transactionStatus)
+      accountNumber: faker.finance.accountNumber(),
 
-  }));
+      type: faker.helpers.arrayElement(transactionTypes),
+
+      amount,
+
+      date: faker.date.recent({ days: 30 }),
+
+      status,
+
+  
+      puntosAdso: (status === 'Completado' && amount > 50000) ? Math.floor(amount * 0.01) : 0
+    };
+  });
 
 };
 
@@ -80,9 +86,18 @@ const buyUSDT = (copBalance, copAmount) => {
   };
 };
 
+
+const calcularPuntosCashback = (transaccion) => {
+  if (transaccion.status === 'Completado' && transaccion.amount > 50000) {
+    return Math.floor(transaccion.amount * 0.01);
+  }
+  return 0;
+};
+
 module.exports = {
   generateTransactionHistory,
   calculateNetBalance,
   generateExchangeRate,
-  buyUSDT
+  buyUSDT,
+  calcularPuntosCashback
 };
