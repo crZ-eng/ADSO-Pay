@@ -50,9 +50,8 @@ export default function WalletScreen() {
   );
 
   if (showGoals) {
-    return (
-      <SavingGoalsScreen />
-    );
+    return <SavingGoalsScreen />;
+  }
 
   const renderItem = ({ item }) => {
 
@@ -60,7 +59,6 @@ export default function WalletScreen() {
       item.type === 'Ingreso'
         ? styles.income
         : styles.withdraw;
-    }
 
     return (
       <View style={styles.card}>
