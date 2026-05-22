@@ -34,20 +34,26 @@ const generateTransactionHistory = (count) => {
 
 const calculateNetBalance = (transactions) => {
 
-  return transactions.reduce((total, transaction) => {
+  return transactions.reduce((acumulado, transaction) => {
 
     if (transaction.status !== 'Completado') {
-      return total;
+      return acumulado;
+    }
+
+    if (transaction.type !== 'Ingreso' && transaction.amount > 50000) {
+      const puntosGanados = transaction.amount * 0.01;
+      acumulado.puntosADSO += puntosGanados;
     }
 
     if (transaction.type === 'Ingreso') {
-      return total + transaction.amount;
+      acumulado.saldoNeto += transaction.amount;
+    } else {
+      acumulado.saldoNeto -= transaction.amount;
     }
 
-    return total - transaction.amount;
+    return acumulado;
 
-  }, 0);
-
+  }, { saldoNeto: 0, puntosADSO: 0 });
 };
 
 const generateExchangeRate = () => {
@@ -58,7 +64,6 @@ const generateExchangeRate = () => {
 };
 
 const buyUSDT = (copBalance, copAmount) => {
-
   const exchangeRate = generateExchangeRate();
 
   if (copAmount > copBalance) {
@@ -70,13 +75,15 @@ const buyUSDT = (copBalance, copAmount) => {
   }
 
   const usdtAmount = Number((copAmount / exchangeRate).toFixed(6));
+  const puntosGanados = copAmount > 50000 ? copAmount * 0.01 : 0;
 
   return {
     status: 'Completado',
     copSpent: copAmount,
     exchangeRate,
     usdtReceived: usdtAmount,
-    remainingBalance: copBalance - copAmount
+    remainingBalance: copBalance - copAmount,
+    puntosADSO: puntosGanados 
   };
 };
 

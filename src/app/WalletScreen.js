@@ -40,7 +40,7 @@ export default function WalletScreen() {
 
   }, [filter, transactions]);
 
-  const netBalance = useMemo(
+const balanceData = useMemo(
     () => calculateNetBalance(transactions),
     [transactions]
   );
@@ -94,7 +94,10 @@ export default function WalletScreen() {
         </Text>
 
         <Text style={styles.balance}>
-          ${netBalance.toLocaleString('es-CO')}
+          ${balanceData.saldoNeto.toLocaleString('es-CO')}
+        </Text>
+
+        <Text style={styles.puntosLabel}>
         </Text>
 
       </View>
@@ -175,6 +178,14 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     marginTop: 10
+  },
+
+  // 🎨 ESTILO NUEVO: Para que tus puntos brillen en la interfaz
+  puntosLabel: {
+    color: '#00C853', 
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 8
   },
 
   filters: {
