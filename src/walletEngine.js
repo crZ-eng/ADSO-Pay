@@ -1,9 +1,6 @@
 const { faker } = require('@faker-js/faker');
 
-const transactionTypes = [
-  'Ingreso',
-  'Retiro'
-];
+const transactionTypes = ['Ingreso', 'Retiro'];
 
 const transactionStatus = [
   'Completado',
@@ -26,14 +23,15 @@ const generateTransactionHistory = (count) => {
     });
 
     return {
-
       id: faker.string.uuid(),
 
-      accountNumber: faker.finance.accountNumber(),
+      accountNumber:
+        faker.finance.accountNumber(),
 
-      type: faker.helpers.arrayElement(
-        transactionTypes
-      ),
+      type:
+        faker.helpers.arrayElement(
+          transactionTypes
+        ),
 
       amount,
 
@@ -44,14 +42,14 @@ const generateTransactionHistory = (count) => {
       status,
 
       puntosAdso:
-        status === 'Completado' && amount > 50000
+        (
+          status === 'Completado' &&
+          amount > 50000
+        )
           ? Math.floor(amount * 0.01)
           : 0
-
     };
-
   });
-
 };
 
 const calculateNetBalance = (transactions) => {
@@ -76,7 +74,6 @@ const calculateNetBalance = (transactions) => {
     },
     0
   );
-
 };
 
 const generateExchangeRate = () => {
@@ -85,7 +82,6 @@ const generateExchangeRate = () => {
     min: 3900,
     max: 4300
   });
-
 };
 
 const buyUSDT = (
@@ -99,15 +95,10 @@ const buyUSDT = (
   if (copAmount > copBalance) {
 
     return {
-
       status: 'Rechazado',
-
       message: 'Saldo insuficiente',
-
       exchangeRate
-
     };
-
   }
 
   const usdtAmount = Number(
@@ -117,7 +108,6 @@ const buyUSDT = (
   );
 
   return {
-
     status: 'Completado',
 
     copSpent: copAmount,
@@ -128,9 +118,7 @@ const buyUSDT = (
 
     remainingBalance:
       copBalance - copAmount
-
   };
-
 };
 
 const calcularPuntosCashback = (
@@ -141,58 +129,91 @@ const calcularPuntosCashback = (
     transaccion.status === 'Completado' &&
     transaccion.amount > 50000
   ) {
-
     return Math.floor(
       transaccion.amount * 0.01
     );
-
   }
 
   return 0;
-
 };
 
-const generateSavingGoals = () => {
+const generateSavingGoals = (count) => {
 
-  return [
-
-    {
-      id: '1',
-      title: 'Viaje a Cartagena',
-      target: 3000000,
-      saved: 1200000
-    },
-
-    {
-      id: '2',
-      title: 'Nuevo Celular',
-      target: 2500000,
-      saved: 800000
-    },
-
-    {
-      id: '3',
-      title: 'Laptop Gamer',
-      target: 5000000,
-      saved: 2000000
-    }
-
+  const goalNames = [
+    'Viaje',
+    'Moto',
+    'Laptop',
+    'Celular',
+    'Emergencias'
   ];
 
+  return Array.from(
+    { length: count },
+    (_, index) => {
+
+      const targetAmount =
+        faker.number.int({
+          min: 500000,
+          max: 5000000
+        });
+
+      const savedAmount =
+        faker.number.int({
+          min: 0,
+          max: targetAmount
+        });
+
+      return {
+        id: faker.string.uuid(),
+
+        name:
+          goalNames[
+            index % goalNames.length
+          ],
+
+        targetAmount,
+
+        savedAmount
+      };
+    }
+  );
+};
+
+const transferToGoal = (
+  walletBalance,
+  goal,
+  amount
+) => {
+
+  if (amount > walletBalance) {
+
+    return {
+      status: 'Rechazado',
+      message: 'Saldo insuficiente'
+    };
+  }
+
+  return {
+    status: 'Completado',
+
+    remainingBalance:
+      walletBalance - amount,
+
+    updatedGoal: {
+      ...goal,
+
+      savedAmount:
+        goal.savedAmount + amount
+    }
+  };
 };
 
 module.exports = {
-
   generateTransactionHistory,
-
   calculateNetBalance,
-
   generateExchangeRate,
-
   buyUSDT,
-
   calcularPuntosCashback,
-
-  generateSavingGoals
-
+  generateSavingGoals,
+  transferToGoal
 };

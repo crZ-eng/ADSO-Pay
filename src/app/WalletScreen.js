@@ -50,7 +50,12 @@ export default function WalletScreen() {
   );
 
   if (showGoals) {
-    return <SavingGoalsScreen />;
+    return (
+      <SavingGoalsScreen
+        onBack={() => setShowGoals(false)}
+      />
+    );
+
   }
 
   const renderItem = ({ item }) => {
