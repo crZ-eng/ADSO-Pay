@@ -10,7 +10,8 @@ import {
 
 const {
   generateTransactionHistory,
-  calculateNetBalance
+  calculateNetBalance,
+  analyzeSpendingProfile
 } = require('../walletEngine');
 
 export default function WalletScreen() {
@@ -45,6 +46,11 @@ export default function WalletScreen() {
     [transactions]
   );
 
+  const spendingProfile = useMemo(
+    () => analyzeSpendingProfile(transactions),
+    [transactions]
+  );
+
   const renderItem = ({ item }) => {
 
     const amountStyle =
@@ -53,6 +59,7 @@ export default function WalletScreen() {
         : styles.withdraw;
 
     return (
+
       <View style={styles.card}>
 
         <View>
@@ -76,7 +83,9 @@ export default function WalletScreen() {
         </Text>
 
       </View>
+
     );
+
   };
 
   return (
@@ -97,6 +106,22 @@ export default function WalletScreen() {
           ${netBalance.toLocaleString('es-CO')}
         </Text>
 
+        <View
+          style={[
+            styles.alertContainer,
+
+            spendingProfile === 'Gasto Crítico'
+              ? styles.critical
+              : styles.stable
+          ]}
+        >
+
+          <Text style={styles.alertText}>
+            {spendingProfile}
+          </Text>
+
+        </View>
+
       </View>
 
       <View style={styles.filters}>
@@ -105,27 +130,33 @@ export default function WalletScreen() {
           style={styles.button}
           onPress={() => setFilter('Todos')}
         >
+
           <Text style={styles.buttonText}>
             Todos
           </Text>
+
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => setFilter('Ingreso')}
         >
+
           <Text style={styles.buttonText}>
             Ingresos
           </Text>
+
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => setFilter('Retiro')}
         >
+
           <Text style={styles.buttonText}>
             Retiros
           </Text>
+
         </TouchableOpacity>
 
       </View>
@@ -140,6 +171,7 @@ export default function WalletScreen() {
     </View>
 
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -175,6 +207,27 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     marginTop: 10
+  },
+
+  alertContainer: {
+    marginTop: 15,
+    padding: 12,
+    borderRadius: 10,
+    alignItems: 'center'
+  },
+
+  critical: {
+    backgroundColor: '#ff1744'
+  },
+
+  stable: {
+    backgroundColor: '#00c853'
+  },
+
+  alertText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18
   },
 
   filters: {
