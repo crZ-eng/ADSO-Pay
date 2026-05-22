@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 
+import SavingGoalsScreen from './SavingGoalsScreen';
+
 import {
   View,
   Text,
@@ -16,6 +18,8 @@ const {
 export default function WalletScreen() {
 
   const [filter, setFilter] = useState('Todos');
+
+  const [showGoals, setShowGoals] = useState(false);
 
   const transactions = useMemo(
     () => generateTransactionHistory(200),
@@ -45,12 +49,18 @@ export default function WalletScreen() {
     [transactions]
   );
 
+  if (showGoals) {
+    return (
+      <SavingGoalsScreen />
+    );
+
   const renderItem = ({ item }) => {
 
     const amountStyle =
       item.type === 'Ingreso'
         ? styles.income
         : styles.withdraw;
+    }
 
     return (
       <View style={styles.card}>
@@ -88,6 +98,15 @@ export default function WalletScreen() {
       </Text>
 
       <View style={styles.balanceContainer}>
+
+        <TouchableOpacity
+          style={styles.savingsButton}
+          onPress={() => setShowGoals(true)}
+        >
+          <Text style={styles.buttonText}>
+            Ver Metas de Ahorro
+          </Text>
+        </TouchableOpacity>
 
         <Text style={styles.balanceLabel}>
           Saldo Neto Total
@@ -232,6 +251,14 @@ const styles = StyleSheet.create({
 
   withdraw: {
     color: '#FF5252'
+  },
+
+  savingsButton: {
+    backgroundColor: '#6200EE',
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 20
   }
 
 });
