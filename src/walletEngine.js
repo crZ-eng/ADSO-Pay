@@ -50,7 +50,39 @@ const calculateNetBalance = (transactions) => {
 
 };
 
+const generateExchangeRate = () => {
+  return faker.number.int({
+    min: 3900,
+    max: 4300
+  });
+};
+
+const buyUSDT = (copBalance, copAmount) => {
+
+  const exchangeRate = generateExchangeRate();
+
+  if (copAmount > copBalance) {
+    return {
+      status: 'Rechazado',
+      message: 'Saldo insuficiente',
+      exchangeRate
+    };
+  }
+
+  const usdtAmount = Number((copAmount / exchangeRate).toFixed(6));
+
+  return {
+    status: 'Completado',
+    copSpent: copAmount,
+    exchangeRate,
+    usdtReceived: usdtAmount,
+    remainingBalance: copBalance - copAmount
+  };
+};
+
 module.exports = {
   generateTransactionHistory,
-  calculateNetBalance
+  calculateNetBalance,
+  generateExchangeRate,
+  buyUSDT
 };
