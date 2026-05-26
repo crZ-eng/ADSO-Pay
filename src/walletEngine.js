@@ -98,6 +98,36 @@ const calculateNetBalance = (
 
 };
 
+const calculateADSOPoints = (
+  transactions
+) => {
+
+  return transactions.reduce(
+    (points, transaction) => {
+
+      if (
+        transaction.status === 'Completado' &&
+        transaction.type === 'Retiro' &&
+        transaction.amount > 50000
+      ) {
+
+        return (
+          points +
+          Math.floor(
+            transaction.amount * 0.01
+          )
+        );
+
+      }
+
+      return points;
+
+    },
+    0
+  );
+
+};
+
 const analyzeSpendingProfile = (
   transactions
 ) => {
@@ -190,8 +220,16 @@ const buyUSDT = (
 
   }
 
-  const usdtAmount =
+  const usdtAmount = Number(
+    (
       copAmount / exchangeRate
+    ).toFixed(6)
+  );
+
+  const puntosADSO =
+    copAmount > 50000
+      ? Math.floor(copAmount * 0.01)
+      : 0;
 
   return {
 
@@ -203,6 +241,8 @@ const buyUSDT = (
 
     usdtReceived:
       usdtAmount,
+
+    puntosADSO,
 
     remainingBalance:
       copBalance - copAmount
@@ -307,6 +347,8 @@ module.exports = {
   buyUSDT,
 
   generateSavingGoals,
+
+  calculateADSOPoints,
 
   transferToGoal
 
