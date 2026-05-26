@@ -16,6 +16,7 @@ const {
   generateTransactionHistory,
   calculateNetBalance,
   analyzeSpendingProfile,
+  calculateADSOPoints,
   buyUSDT
 } = require('../walletEngine');
 
@@ -55,6 +56,11 @@ export default function WalletScreen() {
 
   const netBalance = useMemo(
     () => calculateNetBalance(transactions),
+    [transactions]
+  );
+
+  const adsoPoints = useMemo(
+    () => calculateADSOPoints(transactions),
     [transactions]
   );
 
@@ -170,6 +176,14 @@ export default function WalletScreen() {
           ${netBalance.toLocaleString('es-CO')}
         </Text>
 
+        <Text style={styles.pointsText}>
+          Puntos ADSO:
+          {' '}
+          {adsoPoints.toLocaleString('es-CO')}
+          {' '}
+          pts
+        </Text>
+
         <View
           style={[
             styles.alertContainer,
@@ -228,6 +242,11 @@ export default function WalletScreen() {
                 USDT recibidos:
                 {' '}
                 {usdtResult.usdtReceived}
+                <Text style={styles.resultText}>
+                  Puntos ADSO:
+                  {' '}
+                  {usdtResult.puntosADSO}
+                </Text>
               </Text>
 
             </View>
@@ -310,6 +329,13 @@ const styles = StyleSheet.create({
   balance: {
     color: '#fff',
     fontSize: 32,
+    fontWeight: 'bold',
+    marginTop: 10
+  },
+
+  pointsText: {
+    color: '#00C853',
+    fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10
   },

@@ -179,4 +179,12 @@ describe('Modulo de Puntos de Fidelidad (Cashback)', () => {
 
   });
 
+  test('No debe otorgar Puntos ADSO si la compra es de $50.000 COP o menos', () => {
+        faker.number.int.mockReturnValue(4000);
+        const result = buyUSDT(100000, 30000); 
+        
+        expect(result.status).toBe('Completado');
+        expect(result.puntosADSO).toBe(0); 
+    });
+
 });
