@@ -13,7 +13,7 @@ services:
     environment:
       - NODE_ENV=development
       - NGROK_AUTHTOKEN=3E2sCD6zUCcmwV9rkB5LOMNXfYf_7M9QgpqqdAFDE4XJ8PC7R
-      - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.137.126
+      - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.137.136
     stdin_open: true
     tty: true
 volumes:
