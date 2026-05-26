@@ -4,6 +4,16 @@ const {
   analyzeSpendingProfile
 } = require('../walletEngine');
 
+jest.mock('@faker-js/faker', () => ({
+  faker: {
+    number: {
+      int: jest.fn()
+    }
+  }
+}));
+
+const { faker } = require('@faker-js/faker');
+
 describe('Wallet Engine Tests', () => {
 
   test('Debe generar exactamente 50 transacciones', () => {

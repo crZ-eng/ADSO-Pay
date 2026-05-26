@@ -8,35 +8,46 @@ const transactionStatus = [
 
 const generateTransactionHistory = (count) => {
 
-  return Array.from({ length: count }, () => ({
+  return Array.from({ length: count }, () => {
 
-    id: faker.string.uuid(),
+    const status = faker.helpers.arrayElement(
+      transactionStatus
+    );
 
-    accountNumber:
-      faker.finance.accountNumber(),
-
-    // MUCHOS retiros para forzar Gasto Crítico
-    type:
-      Math.random() > 0.2
-        ? 'Retiro'
-        : 'Ingreso',
-
-    amount: faker.number.float({
+    const amount = faker.number.float({
       min: 10000,
       max: 500000,
       fractionDigits: 2
-    }),
+    });
 
-    date:
-      faker.date.recent({ days: 30 }),
+    return {
+      id: faker.string.uuid(),
 
-    status:
-      faker.helpers.arrayElement(
-        transactionStatus
-      )
+      accountNumber:
+        faker.finance.accountNumber(),
 
-  }));
+      type:
+        faker.helpers.arrayElement(
+          transactionTypes
+        ),
 
+      amount,
+
+      date: faker.date.recent({
+        days: 30
+      }),
+
+      status,
+
+      puntosAdso:
+        (
+          status === 'Completado' &&
+          amount > 50000
+        )
+          ? Math.floor(amount * 0.01)
+          : 0
+    };
+  });
 };
 
 const calculateNetBalance = (transactions) => {
@@ -61,7 +72,6 @@ const calculateNetBalance = (transactions) => {
     },
     0
   );
-
 };
 
 const generateExchangeRate = () => {
@@ -96,8 +106,9 @@ const buyUSDT = (
   }
 
   const usdtAmount = Number(
-    (copAmount / exchangeRate)
-      .toFixed(6)
+    (
+      copAmount / exchangeRate
+    ).toFixed(6)
   );
 
   return {
@@ -112,7 +123,93 @@ const buyUSDT = (
 
     remainingBalance:
       copBalance - copAmount
+  };
+};
 
+const calcularPuntosCashback = (
+  transaccion
+) => {
+
+  if (
+    transaccion.status === 'Completado' &&
+    transaccion.amount > 50000
+  ) {
+    return Math.floor(
+      transaccion.amount * 0.01
+    );
+  }
+
+  return 0;
+};
+
+const generateSavingGoals = (count) => {
+
+  const goalNames = [
+    'Viaje',
+    'Moto',
+    'Laptop',
+    'Celular',
+    'Emergencias'
+  ];
+
+  return Array.from(
+    { length: count },
+    (_, index) => {
+
+      const targetAmount =
+        faker.number.int({
+          min: 500000,
+          max: 5000000
+        });
+
+      const savedAmount =
+        faker.number.int({
+          min: 0,
+          max: targetAmount
+        });
+
+      return {
+        id: faker.string.uuid(),
+
+        name:
+          goalNames[
+            index % goalNames.length
+          ],
+
+        targetAmount,
+
+        savedAmount
+      };
+    }
+  );
+};
+
+const transferToGoal = (
+  walletBalance,
+  goal,
+  amount
+) => {
+
+  if (amount > walletBalance) {
+
+    return {
+      status: 'Rechazado',
+      message: 'Saldo insuficiente'
+    };
+  }
+
+  return {
+    status: 'Completado',
+
+    remainingBalance:
+      walletBalance - amount,
+
+    updatedGoal: {
+      ...goal,
+
+      savedAmount:
+        goal.savedAmount + amount
+    }
   };
 
 };
@@ -172,9 +269,8 @@ module.exports = {
   calculateNetBalance,
 
   generateExchangeRate,
-
   buyUSDT,
-
-  analyzeSpendingProfile
-
+  calcularPuntosCashback,
+  generateSavingGoals,
+  transferToGoal
 };
